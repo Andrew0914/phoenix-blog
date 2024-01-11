@@ -9,3 +9,9 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+Blog.Repo.insert!(%Blog.Posts.Post{
+  title: "Some Title",
+  subtitle: "Some Subtitle",
+  content: "Some Content"
+})

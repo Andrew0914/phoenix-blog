@@ -11,8 +11,9 @@ defmodule Blog.PostsFixtures do
     {:ok, post} =
       attrs
       |> Enum.into(%{
-        body: "some body",
-        title: "some title"
+        content: "some body",
+        title: "some title",
+        subtitle: "some subtitle"
       })
       |> Blog.Posts.create_post()
 

@@ -3,9 +3,13 @@ defmodule BlogWeb.PostControllerTest do
 
   import Blog.PostsFixtures
 
-  @create_attrs %{body: "some body", title: "some title"}
-  @update_attrs %{body: "some updated body", title: "some updated title"}
-  @invalid_attrs %{body: nil, title: nil}
+  @create_attrs %{content: "some body", title: "some title", subtitle: "some subtitle"}
+  @update_attrs %{
+    content: "some updated body",
+    title: "some updated title",
+    subtitle: "some updated subtitle"
+  }
+  @invalid_attrs %{content: nil, title: nil, subtitle: nil}
 
   describe "index" do
     test "lists all posts", %{conn: conn} do

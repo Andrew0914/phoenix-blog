@@ -21,11 +21,12 @@ defmodule Blog.PostsTest do
     end
 
     test "create_post/1 with valid data creates a post" do
-      valid_attrs = %{body: "some body", title: "some title"}
+      valid_attrs = %{content: "some body", title: "some title", subtitle: "some subtitle"}
 
       assert {:ok, %Post{} = post} = Posts.create_post(valid_attrs)
-      assert post.body == "some body"
+      assert post.content == "some body"
       assert post.title == "some title"
+      assert post.subtitle == "some subtitle"
     end
 
     test "create_post/1 with invalid data returns error changeset" do
@@ -34,10 +35,10 @@ defmodule Blog.PostsTest do
 
     test "update_post/2 with valid data updates the post" do
       post = post_fixture()
-      update_attrs = %{body: "some updated body", title: "some updated title"}
+      update_attrs = %{content: "some updated body", title: "some updated title"}
 
       assert {:ok, %Post{} = post} = Posts.update_post(post, update_attrs)
-      assert post.body == "some updated body"
+      assert post.content == "some updated body"
       assert post.title == "some updated title"
     end
 

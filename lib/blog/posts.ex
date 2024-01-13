@@ -17,8 +17,12 @@ defmodule Blog.Posts do
       [%Post{}, ...]
 
   """
-  def list_posts do
-    Repo.all(Post)
+  def list_posts(title) do
+    if title != "" do
+      search_posts(title)
+    else
+      Repo.all(Post)
+    end
   end
 
   @doc """
@@ -100,5 +104,14 @@ defmodule Blog.Posts do
   """
   def change_post(%Post{} = post, attrs \\ %{}) do
     Post.changeset(post, attrs)
+  end
+
+  def search_posts(title) do
+    query =
+      from p in Post,
+        where: ilike(p.title, ^"%#{title}%"),
+        order_by: [asc: p.title]
+
+    Repo.all(query)
   end
 end

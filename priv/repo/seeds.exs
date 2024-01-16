@@ -12,6 +12,7 @@
 
 Blog.Repo.insert!(%Blog.Posts.Post{
   title: "Some Title",
-  subtitle: "Some Subtitle",
-  content: "Some Content"
+  published_on: DateTime.from_iso8601("2024-01-01T00:00:00Z"),
+  content: "Some Content",
+  visibility: true
 })

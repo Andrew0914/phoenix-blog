@@ -3,6 +3,11 @@ defmodule Blog.PostsTest do
 
   alias Blog.Posts
 
+  def get_date(value) do
+    {:ok, date, _} = DateTime.from_iso8601(value)
+    date
+  end
+
   describe "posts" do
     alias Blog.Posts.Post
 
@@ -10,12 +15,12 @@ defmodule Blog.PostsTest do
 
     @invalid_attrs %{body: nil, title: nil}
 
-    test "list_posts/1 returns all posts" do
+    test "returns all posts" do
       post = post_fixture()
       assert Posts.list_posts("") == [post]
     end
 
-    test "list_posts/1 filters posts by partial and case-insensitive title" do
+    test "filters posts by partial and case-insensitive title" do
       post = post_fixture(title: "Title")
       # non-matching
       assert Posts.list_posts("Non-Matching") == []
@@ -37,18 +42,38 @@ defmodule Blog.PostsTest do
       assert Posts.list_posts("") == [post]
     end
 
+    test "returns posts from newest to oldest" do
+      post1 = post_fixture(title: "post 01", published_on: get_date("2024-01-01T00:00:00Z"))
+      post2 = post_fixture(title: "post 02", published_on: get_date("2024-01-02T00:00:00Z"))
+      post3 = post_fixture(title: "post 03", published_on: get_date("2024-01-03T00:00:00Z"))
+      assert Posts.list_posts("") == [post3, post2, post1]
+    end
+
+    test "not returns posts with visibility false" do
+      post = post_fixture(visibility: false)
+      assert Posts.list_posts("") == []
+    end
+
     test "get_post!/1 returns the post with given id" do
       post = post_fixture()
       assert Posts.get_post!(post.id) == post
     end
 
     test "create_post/1 with valid data creates a post" do
-      valid_attrs = %{content: "some body", title: "some title", subtitle: "some subtitle"}
+      {:ok, date, _} = DateTime.from_iso8601("2019-01-01T00:00:00Z")
+
+      valid_attrs = %{
+        content: "some body",
+        title: "some title",
+        published_on: date,
+        visibility: true
+      }
 
       assert {:ok, %Post{} = post} = Posts.create_post(valid_attrs)
       assert post.content == "some body"
       assert post.title == "some title"
-      assert post.subtitle == "some subtitle"
+      assert post.published_on == date
+      assert post.visibility == true
     end
 
     test "create_post/1 with invalid data returns error changeset" do

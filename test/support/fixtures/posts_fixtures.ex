@@ -8,12 +8,15 @@ defmodule Blog.PostsFixtures do
   Generate a post.
   """
   def post_fixture(attrs \\ %{}) do
+    {:ok, published_on, _} = DateTime.from_iso8601("2019-01-01T00:00:00Z")
+
     {:ok, post} =
       attrs
       |> Enum.into(%{
         content: "some body",
         title: "some title",
-        subtitle: "some subtitle"
+        published_on: published_on,
+        visibility: true
       })
       |> Blog.Posts.create_post()
 

@@ -3,11 +3,17 @@ defmodule BlogWeb.PostControllerTest do
 
   import Blog.PostsFixtures
 
-  @create_attrs %{content: "some body", title: "some title", subtitle: "some subtitle"}
+  @create_attrs %{
+    content: "some body",
+    title: "some title",
+    published_on: "2024-01-02T00:00:00Z",
+    visibility: true
+  }
   @update_attrs %{
     content: "some updated body",
     title: "some updated title",
-    subtitle: "some updated subtitle"
+    published_on: "2024-01-02T00:00:00Z",
+    visibility: true
   }
   @invalid_attrs %{content: nil, title: nil, subtitle: nil}
 

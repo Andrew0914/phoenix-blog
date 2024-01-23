@@ -3,6 +3,7 @@ defmodule Blog.PostsFixtures do
   This module defines test helpers for creating
   entities via the `Blog.Posts` context.
   """
+  alias Blog.Repo
 
   @doc """
   Generate a post.
@@ -20,6 +21,6 @@ defmodule Blog.PostsFixtures do
       })
       |> Blog.Posts.create_post()
 
-    post
+    post |> Repo.preload(:comments)
   end
 end

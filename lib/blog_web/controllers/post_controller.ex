@@ -1,6 +1,7 @@
 defmodule BlogWeb.PostController do
   use BlogWeb, :controller
 
+  alias Blog.Comments
   alias Blog.Posts
   alias Blog.Posts.Post
 
@@ -29,7 +30,8 @@ defmodule BlogWeb.PostController do
 
   def show(conn, %{"id" => id}) do
     post = Posts.get_post!(id)
-    render(conn, :show, post: post)
+    new_comment_changeset = Comments.change_comment(%{%Comments.Comment{} | post_id: post.id})
+    render(conn, :show, post: post, new_comment_changeset: new_comment_changeset)
   end
 
   def edit(conn, %{"id" => id}) do
@@ -59,5 +61,55 @@ defmodule BlogWeb.PostController do
     conn
     |> put_flash(:info, "Post deleted successfully.")
     |> redirect(to: ~p"/posts")
+  end
+
+  # comments
+  def create_comment(conn, params) do
+    case Comments.create_comment(params["comment"]) do
+      {:ok, _comment} ->
+        conn
+        |> put_flash(:info, "Comment added successfully.")
+        |> redirect(to: ~p"/posts/#{params["id"]}")
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Cant and comment, try again!")
+        |> redirect(to: ~p"/posts/#{params["id"]}")
+    end
+  end
+
+  def delete_comment(conn, params) do
+    comment = Comments.get_comment!(params["comment_id"])
+
+    {:ok, _comment} = Comments.delete_comment(comment)
+
+    post_id = params["id"]
+
+    conn
+    |> put_flash(:info, "Commen deleted successfully.")
+    |> redirect(to: ~p"/posts/#{post_id}")
+  end
+
+  def edit_comment(conn, params) do
+    IO.inspect(params)
+    comment = Comments.get_comment!(params["comment_id"])
+    changeset = Comments.change_comment(comment)
+    render(conn, :edit_comment, comment: comment, changeset: changeset)
+  end
+
+  def update_comment(conn, %{"comment" => comment_params, "comment_id" => comment_id}) do
+    comment = Comments.get_comment!(comment_id)
+
+    case Comments.update_comment(comment, comment_params) do
+      {:ok, comment} ->
+        conn
+        |> put_flash(:info, "Comment updated successfully.")
+        |> redirect(to: ~p"/posts/#{comment.post_id}")
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Cant update comment")
+        |> redirect(to: ~p"/posts/#{comment.post_id}")
+    end
   end
 end

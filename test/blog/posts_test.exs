@@ -50,7 +50,7 @@ defmodule Blog.PostsTest do
     end
 
     test "not returns posts with visibility false" do
-      post = post_fixture(visibility: false)
+      post_fixture(visibility: false)
       assert Posts.list_posts("") == []
     end
 

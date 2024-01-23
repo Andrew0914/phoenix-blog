@@ -15,4 +15,24 @@
   <:item title="Visibility"><%= if @post.visibility, do: "✔️", else: "🚫" %></:item>
 </.list>
 
+<h2 class="text-lg mt-8 mb-4 font-medium">Comments:</h2>
+
+<ul class="list-none">
+  <%= for comment <- @post.comments do %>
+    <li class="mb-2 bg-gray-100 p-2 rounded-sm flex justify-between">
+      <%= comment.content %> 
+      <div>
+        <.link href={~p"/posts/#{@post}/comments/#{comment.id}"} method="get">
+          Edit
+        </.link>
+        <.link href={~p"/posts/#{@post}/comments/#{comment.id}"} method="delete">
+          Delete
+        </.link>
+      </div>
+    </li>
+  <% end %>
+</ul>
+
+<.comment_form changeset={@new_comment_changeset} action={~p"/posts/#{@post.id}/comments"} />
+
 <.back navigate={~p"/posts"}>Back to posts</.back>

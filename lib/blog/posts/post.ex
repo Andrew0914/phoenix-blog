@@ -7,6 +7,7 @@ defmodule Blog.Posts.Post do
     field :content, :string
     field :published_on, :utc_datetime
     field :visibility, :boolean, default: true
+    has_many :comments, Blog.Comments.Comment
 
     timestamps()
   end

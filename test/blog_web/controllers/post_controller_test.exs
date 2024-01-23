@@ -2,6 +2,7 @@ defmodule BlogWeb.PostControllerTest do
   use BlogWeb.ConnCase
 
   import Blog.PostsFixtures
+  import Blog.CommentsFixtures
 
   @create_attrs %{
     content: "some body",
@@ -104,6 +105,15 @@ defmodule BlogWeb.PostControllerTest do
       post = post_fixture(title: "some title")
       conn = get(conn, ~p"/posts", title: "itl")
       assert html_response(conn, 200) =~ post.title
+    end
+  end
+
+  describe "comments from post" do
+    test "list all comments for post", %{conn: conn} do
+      post = post_fixture(title: "Posts with comments")
+      comment = comment_fixture(post_id: post.id, content: "amazing comment")
+      conn = get(conn, ~p"/posts/#{post}")
+      assert html_response(conn, 200) =~ comment.content
     end
   end
 

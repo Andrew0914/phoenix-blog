@@ -1,0 +1,8 @@
+<.header>
+  Edit comment <%= @comment.id %> of post <%= @comment.post_id %>
+  <:subtitle>Use this form to modifye a comment</:subtitle>
+</.header>
+
+<.comment_form changeset={@changeset} action={~p"/posts/#{@comment.post_id}/comments/#{@comment.id}"} />
+
+<.back navigate={~p"/posts"}>Back to posts</.back>

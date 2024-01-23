@@ -31,8 +31,10 @@ defmodule Blog.Posts do
     |> where([p], p.published_on <= ^DateTime.utc_now())
     |> order_by([p], desc: p.published_on)
     |> Repo.all()
+    |> Repo.preload(:comments)
   end
 
+  @spec get_post!(any()) :: nil | [%{optional(atom()) => any()}] | %{optional(atom()) => any()}
   @doc """
   Gets a single post.
 
@@ -47,7 +49,7 @@ defmodule Blog.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id)
+  def get_post!(id), do: Repo.get!(Post, id) |> Repo.preload(:comments)
 
   @doc """
   Creates a post.

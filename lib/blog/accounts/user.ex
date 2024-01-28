@@ -7,27 +7,38 @@ defmodule Blog.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    field :username, :string
+    has_many :posts, Blog.Posts.Post
+    has_many :comments, Blog.Comments.Comment
 
     timestamps(type: :utc_datetime)
   end
 
+  @spec registration_changeset(
+          {map(), map()}
+          | %{
+              :__struct__ => atom() | %{:__changeset__ => map(), optional(any()) => any()},
+              optional(atom()) => any()
+            },
+          :invalid | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()}
+        ) :: Ecto.Changeset.t()
   @doc """
   A user changeset for registration.
-
+  
   It is important to validate the length of both email and password.
   Otherwise databases may truncate the email without warnings, which
   could lead to unpredictable or insecure behaviour. Long passwords may
   also be very expensive to hash for certain algorithms.
-
+  
   ## Options
-
+  
     * `:hash_password` - Hashes the password so it can be stored securely
       in the database and ensures the password field is cleared to prevent
       leaks in the logs. If password hashing is not needed and clearing the
       password field is not desired (like when using this changeset for
       validations on a LiveView form), this option can be set to `false`.
       Defaults to `true`.
-
+  
     * `:validate_email` - Validates the uniqueness of the email, in case
       you don't want to validate the uniqueness of the email (like when
       using this changeset for validations on a LiveView form before
@@ -39,6 +50,7 @@ defmodule Blog.Accounts.User do
     |> cast(attrs, [:email, :password])
     |> validate_email(opts)
     |> validate_password(opts)
+    |> validate_username(opts)
   end
 
   defp validate_email(changeset, opts) do
@@ -87,7 +99,7 @@ defmodule Blog.Accounts.User do
 
   @doc """
   A user changeset for changing the email.
-
+  
   It requires the email to change otherwise an error is added.
   """
   def email_changeset(user, attrs, opts \\ []) do
@@ -100,11 +112,17 @@ defmodule Blog.Accounts.User do
     end
   end
 
+  defp validate_username(changeset, opts) do
+    changeset
+    |> validate_required([:username])
+    |> validate_length(:username, min: 4, max: 20)
+  end
+
   @doc """
   A user changeset for changing the password.
-
+  
   ## Options
-
+  
     * `:hash_password` - Hashes the password so it can be stored securely
       in the database and ensures the password field is cleared to prevent
       leaks in the logs. If password hashing is not needed and clearing the
@@ -129,7 +147,7 @@ defmodule Blog.Accounts.User do
 
   @doc """
   Verifies the password.
-
+  
   If there is no user or the user doesn't have a password, we call
   `Pbkdf2.no_user_verify/0` to avoid timing attacks.
   """

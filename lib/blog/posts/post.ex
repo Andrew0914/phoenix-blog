@@ -8,6 +8,7 @@ defmodule Blog.Posts.Post do
     field :published_on, :utc_datetime
     field :visibility, :boolean, default: true
     has_many :comments, Blog.Comments.Comment
+    belongs_to :user, Blog.Accounts.User
 
     timestamps()
   end
@@ -18,5 +19,6 @@ defmodule Blog.Posts.Post do
     |> cast(attrs, [:title, :content, :published_on, :visibility])
     |> validate_required([:title, :content, :published_on, :visibility])
     |> unique_constraint(:title)
+    |> foreign_key_constraint(:user_id)
   end
 end

@@ -5,6 +5,7 @@ defmodule Blog.Comments.Comment do
   schema "comments" do
     field :content, :string
     belongs_to :post, Blog.Posts.Post
+    belongs_to :user, Blog.Accounts.User
 
     timestamps()
   end
@@ -15,5 +16,6 @@ defmodule Blog.Comments.Comment do
     |> cast(attrs, [:content, :post_id])
     |> validate_required([:content, :post_id])
     |> foreign_key_constraint(:post_id)
+    |> foreign_key_constraint(:user_id)
   end
 end

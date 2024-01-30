@@ -7,6 +7,7 @@ defmodule BlogWeb.PostController do
 
   plug :require_user_owns_post when action in [:edit, :update, :delete]
   plug :require_authenticated_user when action in [:new, :create]
+  plug :requere_user_own_comment when action in [:edit_comment, :update_comment, :delete_comment]
 
   defp require_authenticated_user(conn, _params) do
     if conn.assigns[:current_user] != nil do
@@ -29,6 +30,20 @@ defmodule BlogWeb.PostController do
       conn
       |> put_flash(:error, "You can only edit or delete your own posts.")
       |> redirect(to: ~p"/posts/#{post_id}")
+      |> halt()
+    end
+  end
+
+  defp requere_user_own_comment(conn, _params) do
+    comment_id = String.to_integer(conn.path_params["comment_id"])
+    comment = Comments.get_comment!(comment_id)
+
+    if conn.assigns[:current_user].id == comment.user_id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You can only edit or delete your own comments.")
+      |> redirect(to: ~p"/posts/#{comment.post_id}")
       |> halt()
     end
   end

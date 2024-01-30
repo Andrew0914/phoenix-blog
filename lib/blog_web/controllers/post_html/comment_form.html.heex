@@ -4,6 +4,7 @@
   </.error>
   <.input field={c[:post_id]} type="hidden" />
   <.input field={c[:content]} type="text" label="Comment"/>
+  <.input field={c[:user_id]} type="hidden" value={@current_user.id}/>
   <:actions>
     <.button>Save</.button>
   </:actions>

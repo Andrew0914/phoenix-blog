@@ -5,6 +5,34 @@ defmodule BlogWeb.PostController do
   alias Blog.Posts
   alias Blog.Posts.Post
 
+  plug :require_user_owns_post when action in [:edit, :update, :delete]
+  plug :require_authenticated_user when action in [:new, :create]
+
+  defp require_authenticated_user(conn, _params) do
+    if conn.assigns[:current_user] != nil do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must be logged in to create a post.")
+      |> redirect(to: ~p"/users/log_in")
+      |> halt()
+    end
+  end
+
+  defp require_user_owns_post(conn, _params) do
+    post_id = String.to_integer(conn.path_params["id"])
+    post = Posts.get_post!(post_id)
+
+    if conn.assigns[:current_user].id == post.user_id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You can only edit or delete your own posts.")
+      |> redirect(to: ~p"/posts/#{post_id}")
+      |> halt()
+    end
+  end
+
   def index(conn, params) do
     title = params["title"] || ""
     posts = Posts.list_posts(title)

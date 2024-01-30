@@ -14,14 +14,6 @@ defmodule Blog.Accounts.User do
     timestamps(type: :utc_datetime)
   end
 
-  @spec registration_changeset(
-          {map(), map()}
-          | %{
-              :__struct__ => atom() | %{:__changeset__ => map(), optional(any()) => any()},
-              optional(atom()) => any()
-            },
-          :invalid | %{optional(:__struct__) => none(), optional(atom() | binary()) => any()}
-        ) :: Ecto.Changeset.t()
   @doc """
   A user changeset for registration.
   
@@ -47,7 +39,7 @@ defmodule Blog.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :username])
     |> validate_email(opts)
     |> validate_password(opts)
     |> validate_username(opts)
@@ -112,7 +104,7 @@ defmodule Blog.Accounts.User do
     end
   end
 
-  defp validate_username(changeset, opts) do
+  defp validate_username(changeset, _opts) do
     changeset
     |> validate_required([:username])
     |> validate_length(:username, min: 4, max: 20)

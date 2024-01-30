@@ -6,6 +6,7 @@
   <.input field={p[:content]} type="text" label="Content" />
   <.input field={p[:published_on]} type="datetime-local" label="Published on" />
   <.input field={p[:visibility]} type="checkbox" label="Visibility" />
+  <.input field={p[:user_id]} type="hidden" value={@current_user.id} />
   <:actions>
     <.button>Save Post</.button>
   </:actions>

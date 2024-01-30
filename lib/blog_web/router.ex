@@ -22,10 +22,15 @@ defmodule BlogWeb.Router do
 
     get "/", PageController, :home
     resources "/posts", PostController
-    post "/posts/:id/comments", PostController, :create_comment
-    delete "/posts/:id/comments/:comment_id", PostController, :delete_comment
-    get "/posts/:id/comments/:comment_id", PostController, :edit_comment
-    put "/posts/:id/comments/:comment_id", PostController, :update_comment
+  end
+
+  scope "/posts", BlogWeb do
+    pipe_through [:browser, :require_authenticated_user]
+
+    post "/:id/comments", PostController, :create_comment
+    delete "/:id/comments/:comment_id", PostController, :delete_comment
+    get "/:id/comments/:comment_id", PostController, :edit_comment
+    put "/:id/comments/:comment_id", PostController, :update_comment
   end
 
   # Other scopes may use custom stacks.

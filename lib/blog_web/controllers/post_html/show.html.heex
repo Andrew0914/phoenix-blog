@@ -13,6 +13,9 @@
   <:item title="Content"><%= @post.content %></:item>
   <:item title="Published on"><%= @post.published_on %></:item>
   <:item title="Visibility"><%= if @post.visibility, do: "✔️", else: "🚫" %></:item>
+  <:item title="Author">
+    <%= if @post.user != nil, do: @post.user.username, else: "❔" %>
+  </:item>
 </.list>
 
 <h2 class="text-lg mt-8 mb-4 font-medium">Comments:</h2>
@@ -20,7 +23,7 @@
 <ul class="list-none">
   <%= for comment <- @post.comments do %>
     <li class="mb-2 bg-gray-100 p-2 rounded-sm flex justify-between">
-      <%= comment.content %> 
+      💬<%= if comment.user != nil, do: comment.user.username, else: "❔" %>: <%= comment.content %> 
       <div>
         <.link href={~p"/posts/#{@post}/comments/#{comment.id}"} method="get">
           Edit
@@ -33,6 +36,7 @@
   <% end %>
 </ul>
 
-<.comment_form changeset={@new_comment_changeset} action={~p"/posts/#{@post.id}/comments"} />
-
+<%= if assigns[:current_user] do %>
+<.comment_form changeset={@new_comment_changeset} action={~p"/posts/#{@post.id}/comments"} current_user={assigns[:current_user] }/>
+<% end %>
 <.back navigate={~p"/posts"}>Back to posts</.back>

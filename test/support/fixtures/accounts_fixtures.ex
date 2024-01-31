@@ -7,10 +7,18 @@ defmodule Blog.AccountsFixtures do
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
   def valid_user_password, do: "hello world!"
 
+  # create funtion that returns valid username
+  def valid_username do
+    timestamp = DateTime.utc_now() |> DateTime.to_string()
+    unique_integer = System.unique_integer()
+    "u#{timestamp}#{unique_integer}" |> String.slice(0..19)
+  end
+
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
       email: unique_user_email(),
-      password: valid_user_password()
+      password: valid_user_password(),
+      username: valid_username()
     })
   end
 

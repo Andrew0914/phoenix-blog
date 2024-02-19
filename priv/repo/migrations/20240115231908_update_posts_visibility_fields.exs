@@ -1,4 +1,4 @@
-defmodule Blog.Repo.Migrations.CreatePosts do
+defmodule Blog.Repo.Migrations.UpdatePostsVisibilityFields do
   use Ecto.Migration
 
   def change do

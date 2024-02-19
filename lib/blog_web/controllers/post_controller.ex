@@ -1,6 +1,7 @@
 defmodule BlogWeb.PostController do
   use BlogWeb, :controller
 
+  alias Blog.Tags
   alias Blog.Comments
   alias Blog.Posts
   alias Blog.Posts.Post
@@ -55,19 +56,25 @@ defmodule BlogWeb.PostController do
   end
 
   def new(conn, _params) do
-    changeset = Posts.change_post(%Post{})
-    render(conn, :new, changeset: changeset)
+    changeset = Posts.change_post(%Post{}, %{}, [%Tags.Tag{}])
+
+    render(conn, :new, changeset: changeset, tag_options: tag_options())
   end
 
   def create(conn, %{"post" => post_params}) do
-    case Posts.create_post(post_params) do
+    tags = Map.get(post_params, "tag_ids", []) |> Enum.map(&Tags.get_tag!/1)
+
+    case Posts.create_post(post_params, tags) do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post created successfully.")
         |> redirect(to: ~p"/posts/#{post}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, :new,
+          changeset: changeset,
+          tag_options: tag_options(Enum.map(tags, & &1.id))
+        )
     end
   end
 
@@ -80,20 +87,25 @@ defmodule BlogWeb.PostController do
   def edit(conn, %{"id" => id}) do
     post = Posts.get_post!(id)
     changeset = Posts.change_post(post)
-    render(conn, :edit, post: post, changeset: changeset)
+    render(conn, :edit, post: post, changeset: changeset, tag_options: tag_options())
   end
 
   def update(conn, %{"id" => id, "post" => post_params}) do
     post = Posts.get_post!(id)
+    tags = Map.get(post_params, "tag_ids", []) |> Enum.map(&Tags.get_tag!/1)
 
-    case Posts.update_post(post, post_params) do
+    case Posts.update_post(post, post_params, tags) do
       {:ok, post} ->
         conn
         |> put_flash(:info, "Post updated successfully.")
         |> redirect(to: ~p"/posts/#{post}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, post: post, changeset: changeset)
+        render(conn, :edit,
+          post: post,
+          changeset: changeset,
+          tag_options: tag_options(Enum.map(tags, & &1.id))
+        )
     end
   end
 
@@ -154,5 +166,13 @@ defmodule BlogWeb.PostController do
         |> put_flash(:error, "Cant update comment")
         |> redirect(to: ~p"/posts/#{comment.post_id}")
     end
+  end
+
+  ## TAGS
+  defp tag_options(selected_ids \\ []) do
+    Tags.list_tags()
+    |> Enum.map(fn tag ->
+      [key: tag.tag, value: tag.id, selected: tag.id in selected_ids]
+    end)
   end
 end

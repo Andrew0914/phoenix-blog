@@ -13,6 +13,7 @@ defmodule Blog.PostsTest do
 
     import Blog.PostsFixtures
     import Blog.AccountsFixtures
+    import Blog.TagsFixtures
 
     @invalid_attrs %{body: nil, title: nil}
 
@@ -105,6 +106,38 @@ defmodule Blog.PostsTest do
 
     test "create_post/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Posts.create_post(@invalid_attrs)
+    end
+
+    test "create_post/1 with tags" do
+      user = user_fixture()
+      tag1 = tag_fixture(%{tag: "tag 1"})
+      tag2 = tag_fixture(%{tag: "tag 2"})
+
+      valid_attrs1 = %{
+        content: "some content",
+        title: "post 1",
+        user_id: user.id,
+        published_on: get_date("2024-01-02T00:00:00Z")
+      }
+
+      valid_attrs2 = %{
+        content: "some content",
+        title: "post 2",
+        user_id: user.id,
+        published_on: get_date("2024-01-02T00:00:00Z")
+      }
+
+      assert {:ok, %Post{} = post1} = Posts.create_post(valid_attrs1, [tag1, tag2])
+      assert {:ok, %Post{} = post2} = Posts.create_post(valid_attrs2, [tag1])
+
+      # posts have many tags
+      assert Repo.preload(post1, :tags).tags == [tag1, tag2]
+      assert Repo.preload(post2, :tags).tags == [tag1]
+
+      # tags have many posts
+      # we preload posts: [:tags] because posts contain the list of tags when created
+      assert Repo.preload(tag1, posts: [:tags]).posts == [post1, post2]
+      assert Repo.preload(tag2, posts: [:tags]).posts == [post1]
     end
 
     test "update_post/2 with valid data updates the post" do

@@ -22,6 +22,7 @@ defmodule BlogWeb.Router do
 
     get "/", PageController, :home
     resources "/posts", PostController
+    resources "/tags", TagController
   end
 
   scope "/posts", BlogWeb do

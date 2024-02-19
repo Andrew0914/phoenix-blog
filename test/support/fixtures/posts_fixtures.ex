@@ -21,6 +21,6 @@ defmodule Blog.PostsFixtures do
       })
       |> Blog.Posts.create_post()
 
-    post |> Repo.preload([:comments, :user])
+    post |> Repo.preload([:comments, :user, :tags])
   end
 end

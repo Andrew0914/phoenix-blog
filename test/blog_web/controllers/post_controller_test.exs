@@ -4,6 +4,7 @@ defmodule BlogWeb.PostControllerTest do
   import Blog.PostsFixtures
   import Blog.CommentsFixtures
   import Blog.AccountsFixtures
+  import Blog.TagsFixtures
 
   @create_attrs %{
     content: "some body",
@@ -143,6 +144,33 @@ defmodule BlogWeb.PostControllerTest do
       conn = get(conn, ~p"/posts/#{post}")
       assert html_response(conn, 200) =~ comment.content
     end
+  end
+
+  test "create post with tags", %{conn: conn} do
+    # Arrange: Setup the necessary data
+    user = user_fixture()
+    conn = log_in_user(conn, user)
+
+    tag1 = tag_fixture(tag: "tag 3")
+    tag2 = tag_fixture(tag: "tag 4")
+
+    create_attrs = %{
+      content: "some content",
+      title: "some title",
+      visible: true,
+      published_on: DateTime.utc_now(),
+      user_id: user.id,
+      tag_ids: [tag1.id, tag2.id]
+    }
+
+    # Act: send the HTTP POST request
+    conn = post(conn, ~p"/posts", post: create_attrs)
+
+    # Assert: Verify the response is redirected and that the post is created with tags.
+    assert %{id: id} = redirected_params(conn)
+    assert redirected_to(conn) == ~p"/posts/#{id}"
+
+    assert Blog.Posts.get_post!(id).tags == [tag1, tag2]
   end
 
   defp create_post(_) do

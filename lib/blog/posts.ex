@@ -31,7 +31,7 @@ defmodule Blog.Posts do
     |> where([p], p.published_on <= ^DateTime.utc_now())
     |> order_by([p], desc: p.published_on)
     |> Repo.all()
-    |> Repo.preload([:user, comments: [:user]])
+    |> Repo.preload([:user, :tags, comments: [:user]])
   end
 
   @spec get_post!(any()) :: nil | [%{optional(atom()) => any()}] | %{optional(atom()) => any()}
@@ -49,7 +49,8 @@ defmodule Blog.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id) |> Repo.preload([:user, comments: [:user]])
+  def get_post!(id), do: Repo.get!(Post, id) |> Repo.preload([:user, :tags, comments: [:user]])
+  :ta
 
   @doc """
   Creates a post.
@@ -63,9 +64,9 @@ defmodule Blog.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_post(attrs \\ %{}) do
+  def create_post(attrs \\ %{}, tags \\ []) do
     %Post{}
-    |> Post.changeset(attrs)
+    |> Post.changeset(attrs, tags)
     |> Repo.insert()
   end
 
@@ -81,9 +82,9 @@ defmodule Blog.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_post(%Post{} = post, attrs) do
+  def update_post(%Post{} = post, attrs, tags \\ []) do
     post
-    |> Post.changeset(attrs)
+    |> Post.changeset(attrs, tags)
     |> Repo.update()
   end
 
@@ -112,7 +113,7 @@ defmodule Blog.Posts do
       %Ecto.Changeset{data: %Post{}}
 
   """
-  def change_post(%Post{} = post, attrs \\ %{}) do
-    Post.changeset(post, attrs)
+  def change_post(%Post{} = post, attrs \\ %{}, tags \\ []) do
+    Post.changeset(post, attrs, tags)
   end
 end

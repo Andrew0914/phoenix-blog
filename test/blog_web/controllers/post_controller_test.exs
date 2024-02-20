@@ -43,14 +43,19 @@ defmodule BlogWeb.PostControllerTest do
   describe "create post" do
     test "redirects to show when data is valid", %{conn: conn} do
       user = user_fixture()
+      tag = tag_fixture(tag: "My tag for create post")
 
-      conn = conn |> log_in_user(user) |> post(~p"/posts", post: post_attrs(%{user_id: user.id}))
+      conn =
+        conn
+        |> log_in_user(user)
+        |> post(~p"/posts", post: post_attrs(%{user_id: user.id, tag_ids: [tag.id]}))
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/posts/#{id}"
 
       conn = get(conn, ~p"/posts/#{id}")
       assert html_response(conn, 200) =~ "Post #{id}"
+      assert html_response(conn, 200) =~ "My tag for create post"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do

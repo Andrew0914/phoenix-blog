@@ -25,7 +25,7 @@ defmodule BlogWeb.PostController do
     post_id = String.to_integer(conn.path_params["id"])
     post = Posts.get_post!(post_id)
 
-    if conn.assigns[:current_user].id == post.user_id do
+    if conn.assigns[:current_user] && conn.assigns[:current_user].id == post.user_id do
       conn
     else
       conn
@@ -105,7 +105,8 @@ defmodule BlogWeb.PostController do
   def edit(conn, %{"id" => id}) do
     post = Posts.get_post!(id)
     changeset = Posts.change_post(post)
-    render(conn, :edit, post: post, changeset: changeset, tag_options: tag_options())
+    tags_ids = post.tags |> Enum.map(& &1.id)
+    render(conn, :edit, post: post, changeset: changeset, tag_options: tag_options(tags_ids))
   end
 
   def update(conn, %{"id" => id, "post" => post_params}) do
@@ -186,7 +187,7 @@ defmodule BlogWeb.PostController do
   end
 
   ## TAGS
-  defp tag_options(selected_ids \\ []) do
+  defp tag_options(selected_ids) do
     Tags.list_tags()
     |> Enum.map(fn tag ->
       [key: tag.tag, value: tag.id, selected: tag.id in selected_ids]

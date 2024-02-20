@@ -1,7 +1,9 @@
 defmodule BlogWeb.TagControllerTest do
   use BlogWeb.ConnCase
 
+  import Blog.AccountsFixtures
   import Blog.TagsFixtures
+  import Blog.PostsFixtures
 
   @create_attrs %{tag: "some tag"}
   @update_attrs %{tag: "some updated tag"}
@@ -74,6 +76,17 @@ defmodule BlogWeb.TagControllerTest do
       assert_error_sent 404, fn ->
         get(conn, ~p"/tags/#{tag}")
       end
+    end
+  end
+
+  describe "show tag" do
+    test "when show a tag shoul show associated posts", %{conn: conn} do
+      tag = tag_fixture(name: "Tag to be show")
+      user = user_fixture(username: "User tag")
+      post_fixture(%{user_id: user.id, title: "A post with tag 1"}, [tag])
+
+      conn = get(conn, ~p"/posts?tag=#{tag.id}")
+      assert html_response(conn, 200) =~ "A post with tag 1"
     end
   end
 

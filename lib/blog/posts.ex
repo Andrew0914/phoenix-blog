@@ -31,7 +31,7 @@ defmodule Blog.Posts do
     |> where([p], p.published_on <= ^DateTime.utc_now())
     |> order_by([p], desc: p.published_on)
     |> Repo.all()
-    |> Repo.preload([:user, :tags, comments: [:user]])
+    |> Repo.preload([:user, :tags, :cover_image, comments: [:user]])
   end
 
   @spec get_post!(any()) :: nil | [%{optional(atom()) => any()}] | %{optional(atom()) => any()}
@@ -50,7 +50,7 @@ defmodule Blog.Posts do
 
   """
   def get_post!(id) do
-    Repo.get!(Post, id) |> Repo.preload([:user, :tags, comments: [:user]])
+    Repo.get!(Post, id) |> Repo.preload([:user, :tags, :cover_image, comments: [:user]])
   end
 
   @doc """
@@ -85,6 +85,7 @@ defmodule Blog.Posts do
   """
   def update_post(%Post{} = post, attrs, tags \\ []) do
     post
+    |> Repo.preload(:cover_image)
     |> Post.changeset(attrs, tags)
     |> Repo.update()
   end

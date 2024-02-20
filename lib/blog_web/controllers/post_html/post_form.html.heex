@@ -4,11 +4,14 @@
   </.error>
   <.input field={p[:title]} type="text" label="Title" />
   <.input field={p[:content]} type="text" label="Content" />
+  <.inputs_for :let={cover_image} field={p[:cover_image]}>
+    <.input type="text" field={cover_image[:url]} label="Cover Image URL" />
+  </.inputs_for>
   <.input field={p[:published_on]} type="datetime-local" label="Published on" />
   <.input field={p[:visibility]} type="checkbox" label="Visibility" />
   <.input field={p[:user_id]} type="hidden" value={@current_user.id} />
   <.input field={p[:tag_ids]} type="select" label="Tags" multiple={true} options={@tag_options} />
- 
+
   <:actions>
     <.button>Save Post</.button>
   </:actions>

@@ -1,4 +1,6 @@
 defmodule BlogWeb.PostControllerTest do
+  alias Blog.Posts
+  alias Blog.CoverImages.CoverImage
   use BlogWeb.ConnCase
 
   import Blog.PostsFixtures
@@ -176,6 +178,34 @@ defmodule BlogWeb.PostControllerTest do
     assert redirected_to(conn) == ~p"/posts/#{id}"
 
     assert Blog.Posts.get_post!(id).tags == [tag1, tag2]
+  end
+
+  test "create post with cover image", %{conn: conn} do
+    user = user_fixture()
+    conn = log_in_user(conn, user)
+
+    create_attrs = %{
+      content: "some content",
+      title: "some title",
+      visible: true,
+      published_on: DateTime.utc_now(),
+      user_id: user.id,
+      cover_image: %{
+        url: "https://www.example.com/image.png"
+      }
+    }
+
+    conn = post(conn, ~p"/posts", post: create_attrs)
+
+    assert %{id: id} = redirected_params(conn)
+    assert redirected_to(conn) == ~p"/posts/#{id}"
+
+    conn = get(conn, ~p"/posts/#{id}")
+    post = Posts.get_post!(id)
+    # post was created with cover image
+    assert %CoverImage{url: "https://www.example.com/image.png"} = post.cover_image
+    # post cover image is displayed on show page
+    assert html_response(conn, 200) =~ "https://www.example.com/image.png"
   end
 
   defp create_post(_) do

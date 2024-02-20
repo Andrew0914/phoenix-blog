@@ -1,4 +1,5 @@
 defmodule Blog.PostsTest do
+  alias Blog.CoverImages.CoverImage
   use Blog.DataCase
 
   alias Blog.Posts
@@ -140,6 +141,26 @@ defmodule Blog.PostsTest do
       assert Repo.preload(tag2, posts: [:tags]).posts == [post1]
     end
 
+    test "create_post/1 with image" do
+      user = user_fixture(username: "UserCover")
+
+      valid_attrs = %{
+        content: "some content",
+        title: "some title",
+        cover_image: %{
+          url: "https://www.example.com/image.png"
+        },
+        visible: true,
+        published_on: DateTime.utc_now(),
+        user_id: user.id
+      }
+
+      assert {:ok, %Post{} = post} = Posts.create_post(valid_attrs)
+
+      assert %CoverImage{url: "https://www.example.com/image.png"} =
+               Repo.preload(post, :cover_image).cover_image
+    end
+
     test "update_post/2 with valid data updates the post" do
       user = user_fixture()
       post = post_fixture(user_id: user.id)
@@ -152,9 +173,28 @@ defmodule Blog.PostsTest do
 
     test "update_post/2 with invalid data returns error changeset" do
       user = user_fixture()
-      post = post_fixture(user_id: user.id)
+
+      post =
+        post_fixture(user_id: user.id)
+
       assert {:error, %Ecto.Changeset{}} = Posts.update_post(post, @invalid_attrs)
       assert post == Posts.get_post!(post.id)
+    end
+
+    test "update_post/1 update existing image" do
+      user = user_fixture()
+      post = post_fixture(user_id: user.id, cover_image: %{url: "https://www.example.com/image.png"})
+
+      assert {:ok, %Post{} = post} = Posts.update_post(post, %{cover_image: %{url: "https://www.example.com/image2.png"}})
+      assert post.cover_image.url == "https://www.example.com/image2.png"
+    end
+
+    test "delete_post/1 deletes post and cover image" do
+      user = user_fixture()
+      post = post_fixture(user_id: user.id, cover_image: %{url: "https://www.example.com/image.png"})
+      assert {:ok, %Post{}} = Posts.delete_post(post)
+      assert_raise Ecto.NoResultsError, fn -> Posts.get_post!(post.id) end
+      assert_raise Ecto.NoResultsError, fn -> Repo.get!(CoverImage, post.cover_image.id) end
     end
 
     test "delete_post/1 deletes the post" do

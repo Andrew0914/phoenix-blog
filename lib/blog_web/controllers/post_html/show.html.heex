@@ -8,6 +8,10 @@
   </:actions>
 </.header>
 
+<%= if @post.cover_image do %>
+<img src={@post.cover_image.url} alt="Post image" class="w-1/2 h-1/2 mx-auto my-4 rounded" />
+<% end %>
+
 <.list>
   <:item title="Title"><%= @post.title %></:item>
   <:item title="Content"><%= @post.content %></:item>

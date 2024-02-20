@@ -26,6 +26,19 @@ defmodule BlogWeb.TagController do
     end
   end
 
+  def create_for_post(conn, %{"tag" => tag_params}) do
+    case Tags.create_tag(tag_params) do
+      {:ok, tag} ->
+        conn
+        |> put_flash(:info, "Tag created successfully.")
+        |> redirect(to: ~p"/posts/new?new_tag_id=#{tag.id}")
+
+      {:error, _} ->
+        conn |> put_flash(:error, "Could not create tag.")
+        render(~p"/posts/new")
+    end
+  end
+
   def show(conn, %{"id" => id}) do
     tag = Tags.get_tag!(id)
     render(conn, :show, tag: tag)

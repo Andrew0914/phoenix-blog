@@ -49,8 +49,9 @@ defmodule Blog.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id) |> Repo.preload([:user, :tags, comments: [:user]])
-  :ta
+  def get_post!(id) do
+    Repo.get!(Post, id) |> Repo.preload([:user, :tags, comments: [:user]])
+  end
 
   @doc """
   Creates a post.

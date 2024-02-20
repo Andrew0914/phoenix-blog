@@ -8,7 +8,7 @@
   <.input field={p[:visibility]} type="checkbox" label="Visibility" />
   <.input field={p[:user_id]} type="hidden" value={@current_user.id} />
   <.input field={p[:tag_ids]} type="select" label="Tags" multiple={true} options={@tag_options} />
-
+ 
   <:actions>
     <.button>Save Post</.button>
   </:actions>

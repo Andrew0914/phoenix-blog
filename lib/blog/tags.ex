@@ -7,6 +7,7 @@ defmodule Blog.Tags do
   alias Blog.Repo
 
   alias Blog.Tags.Tag
+  alias Blog.Posts.Post
 
   @doc """
   Returns the list of tags.
@@ -100,5 +101,9 @@ defmodule Blog.Tags do
   """
   def change_tag(%Tag{} = tag, attrs \\ %{}) do
     Tag.changeset(tag, attrs)
+  end
+
+  def get_posts(%Tag{} = tag) do
+    Repo.all(from p in Post, join: t in assoc(p, :tags), where: t.id == ^tag.id, select: p.id)
   end
 end

@@ -50,19 +50,36 @@ defmodule BlogWeb.PostController do
   end
 
   def index(conn, params) do
-    title = params["title"] || ""
-    posts = Posts.list_posts(title)
-    render(conn, :index, posts: posts)
+    selected_tag = params["tag"]
+
+    if selected_tag != nil do
+      tag = Tags.get_tag!(selected_tag)
+      posts = tag |> Tags.get_posts() |> Enum.map(&Posts.get_post!/1)
+
+      render(conn, :index, posts: posts)
+    else
+      title = params["title"] || ""
+      posts = Posts.list_posts(title)
+      render(conn, :index, posts: posts)
+    end
   end
 
-  def new(conn, _params) do
-    changeset = Posts.change_post(%Post{}, %{}, [%Tags.Tag{}])
+  def new(conn, params) do
+    changeset = Posts.change_post(%Post{})
+    tag_changeset = Tags.change_tag(%Tags.Tag{})
 
-    render(conn, :new, changeset: changeset, tag_options: tag_options())
+    new_tag_id = Map.get(params, "new_tag_id", "-1") |> String.to_integer()
+
+    render(conn, :new,
+      changeset: changeset,
+      tag_options: tag_options([new_tag_id]),
+      tag_changeset: tag_changeset
+    )
   end
 
   def create(conn, %{"post" => post_params}) do
     tags = Map.get(post_params, "tag_ids", []) |> Enum.map(&Tags.get_tag!/1)
+    tag_changeset = Tags.change_tag(%Tags.Tag{})
 
     case Posts.create_post(post_params, tags) do
       {:ok, post} ->
@@ -73,7 +90,8 @@ defmodule BlogWeb.PostController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new,
           changeset: changeset,
-          tag_options: tag_options(Enum.map(tags, & &1.id))
+          tag_options: tag_options(Enum.map(tags, & &1.id)),
+          tag_changeset: tag_changeset
         )
     end
   end
@@ -146,7 +164,6 @@ defmodule BlogWeb.PostController do
   end
 
   def edit_comment(conn, params) do
-    IO.inspect(params)
     comment = Comments.get_comment!(params["comment_id"])
     changeset = Comments.change_comment(comment)
     render(conn, :edit_comment, comment: comment, changeset: changeset)

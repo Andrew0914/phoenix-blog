@@ -18,7 +18,17 @@
   </:item>
 </.list>
 
-<h2 class="text-lg mt-8 mb-4 font-medium">Comments:</h2>
+<h2 class="text-lg my-4 font-medium">Tags:</h2>
+
+<div class="flex gap-4 mt-8 flex-wrap">
+  <%= for tag <- @post.tags do %>
+    <.link class="rounded-xl bg-blue-700 text-white px-2 py-1 text-center" href={~p"/posts?tag=#{tag.id}"}>
+      <%= tag.tag %>
+    </.link>
+  <% end %>
+</div>
+
+<h2 class="text-lg my-1 font-medium">Comments:</h2>
 
 <ul class="list-none">
   <%= for comment <- @post.comments do %>

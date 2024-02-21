@@ -51,7 +51,8 @@ defmodule Blog.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
-      {:pbkdf2_elixir, "~> 2.2"}
+      {:pbkdf2_elixir, "~> 2.2"},
+      {:faker, "~> 0.17.0"}
     ]
   end
 

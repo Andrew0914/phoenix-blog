@@ -16,7 +16,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    name: run tests
+    name: run tests and format checks
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
@@ -24,4 +24,8 @@ jobs:
           otp-version: "25.2"
           elixir-version: "1.14.2"
       - run: mix deps.get
+      - run: mix format --check-formatted
+      - run: mix compile --warnings-as-errors
+      - run: mix credo
+      - run: mix dialyzer
       - run: mix test

@@ -52,7 +52,9 @@ defmodule Blog.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
       {:pbkdf2_elixir, "~> 2.2"},
-      {:faker, "~> 0.17.0"}
+      {:faker, "~> 0.17.0"},
+      {:credo, "~> 1.7"},
+      {:dialyxir, "~> 1.4"}
     ]
   end
 

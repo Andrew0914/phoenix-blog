@@ -9,7 +9,10 @@
 
 <div class="flex gap-4 mt-8 flex-wrap">
   <%= for tag <- @tags do %>
-    <.link class="rounded-xl bg-blue-700 text-white p-2 text-center whitespace-nowrap" href={~p"/posts?tag=#{tag.id}"}>
+    <.link
+      class="rounded-xl bg-blue-700 text-white p-2 text-center whitespace-nowrap"
+      href={~p"/posts?tag=#{tag.id}"}
+    >
       <%= tag.tag %>
     </.link>
   <% end %>

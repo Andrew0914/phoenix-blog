@@ -183,15 +183,24 @@ defmodule Blog.PostsTest do
 
     test "update_post/1 update existing image" do
       user = user_fixture()
-      post = post_fixture(user_id: user.id, cover_image: %{url: "https://www.example.com/image.png"})
 
-      assert {:ok, %Post{} = post} = Posts.update_post(post, %{cover_image: %{url: "https://www.example.com/image2.png"}})
+      post =
+        post_fixture(user_id: user.id, cover_image: %{url: "https://www.example.com/image.png"})
+
+      assert {:ok, %Post{} = post} =
+               Posts.update_post(post, %{
+                 cover_image: %{url: "https://www.example.com/image2.png"}
+               })
+
       assert post.cover_image.url == "https://www.example.com/image2.png"
     end
 
     test "delete_post/1 deletes post and cover image" do
       user = user_fixture()
-      post = post_fixture(user_id: user.id, cover_image: %{url: "https://www.example.com/image.png"})
+
+      post =
+        post_fixture(user_id: user.id, cover_image: %{url: "https://www.example.com/image.png"})
+
       assert {:ok, %Post{}} = Posts.delete_post(post)
       assert_raise Ecto.NoResultsError, fn -> Posts.get_post!(post.id) end
       assert_raise Ecto.NoResultsError, fn -> Repo.get!(CoverImage, post.cover_image.id) end

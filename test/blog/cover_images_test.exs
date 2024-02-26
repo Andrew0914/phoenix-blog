@@ -39,13 +39,18 @@ defmodule Blog.CoverImagesTest do
       cover_image = cover_image_fixture()
       update_attrs = %{url: "some updated url"}
 
-      assert {:ok, %CoverImage{} = cover_image} = CoverImages.update_cover_image(cover_image, update_attrs)
+      assert {:ok, %CoverImage{} = cover_image} =
+               CoverImages.update_cover_image(cover_image, update_attrs)
+
       assert cover_image.url == "some updated url"
     end
 
     test "update_cover_image/2 with invalid data returns error changeset" do
       cover_image = cover_image_fixture()
-      assert {:error, %Ecto.Changeset{}} = CoverImages.update_cover_image(cover_image, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               CoverImages.update_cover_image(cover_image, @invalid_attrs)
+
       assert cover_image == CoverImages.get_cover_image!(cover_image.id)
     end
 
@@ -60,6 +65,4 @@ defmodule Blog.CoverImagesTest do
       assert %Ecto.Changeset{} = CoverImages.change_cover_image(cover_image)
     end
   end
-
-
 end

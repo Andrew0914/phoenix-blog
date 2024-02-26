@@ -1,4 +1,7 @@
 defmodule Blog.Posts.Post do
+  @moduledoc """
+  This module provides functions to handle posts.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

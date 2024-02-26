@@ -1,4 +1,7 @@
 defmodule Blog.Utils.Seed do
+  @moduledoc """
+  This module provides functions to seed the database with test data.F
+  """
   def populate() do
     # Creating a user
     password = "123456789012"

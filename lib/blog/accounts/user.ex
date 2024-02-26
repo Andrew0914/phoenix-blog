@@ -1,4 +1,7 @@
 defmodule Blog.Accounts.User do
+  @moduledoc """
+  This module provides functions to handle user accounts.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

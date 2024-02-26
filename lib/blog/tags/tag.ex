@@ -1,4 +1,7 @@
 defmodule Blog.Tags.Tag do
+  @moduledoc """
+  This module   provides functions to handle tags.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

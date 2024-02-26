@@ -1,4 +1,7 @@
 defmodule Blog.CoverImages.CoverImage do
+  @moduledoc """
+  This module provides functions to handle cover images.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

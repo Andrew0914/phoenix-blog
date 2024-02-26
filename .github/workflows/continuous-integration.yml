@@ -24,8 +24,8 @@ jobs:
         with:
           otp-version: "25.2"
           elixir-version: "1.16.1"
-      - run: mix format --check-formatted
       - run: mix deps.get
+      - run: mix format --check-formatted
       - run: mix compile --warnings-as-errors
       - run: mix credo
       - run: mix dialyzer

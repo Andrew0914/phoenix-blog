@@ -23,7 +23,7 @@ jobs:
       - uses: erlef/setup-beam@v1.17.3
         with:
           otp-version: "25.2"
-          elixir-version: "1.16.1-otp-25"
+          elixir-version: "1.16.1"
       - run: mix format --check-formatted
       - run: mix deps.get
       - run: mix compile --warnings-as-errors

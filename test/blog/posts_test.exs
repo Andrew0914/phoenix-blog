@@ -174,8 +174,7 @@ defmodule Blog.PostsTest do
     test "update_post/2 with invalid data returns error changeset" do
       user = user_fixture()
 
-      post =
-        post_fixture(user_id: user.id)
+      post = post_fixture(user_id: user.id)
 
       assert {:error, %Ecto.Changeset{}} = Posts.update_post(post, @invalid_attrs)
       assert post == Posts.get_post!(post.id)

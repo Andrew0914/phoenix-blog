@@ -1,3 +1,4 @@
+name: Check code quality
 on: push
 
 jobs:
@@ -19,10 +20,10 @@ jobs:
     name: run tests and format checks
     steps:
       - uses: actions/checkout@v3
-      - uses: erlef/setup-beam@v1
+      - uses: erlef/setup-beam@v1.17.3
         with:
-          otp-version: "26.2.2"
-          elixir-version: "1.16.1"
+          otp-version: "25.2"
+          elixir-version: "1.16.1-otp-25"
       - run: mix format --check-formatted
       - run: mix deps.get
       - run: mix compile --warnings-as-errors
